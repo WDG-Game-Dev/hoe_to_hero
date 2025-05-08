@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 3
+  tags:
+  - Object Hit
+  - DeadZone
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Ground
+  - Water
+  - UI
+  - Object Nabrak
+  - Player
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Overlap BG
+    uniqueID: 3431421017
+    locked: 0
+  - name: Env Overlap
+    uniqueID: 1099026471
+    locked: 0
+  - name: Env
+    uniqueID: 1144752347
+    locked: 0
+  - name: Player
+    uniqueID: 48503593
+    locked: 0
+  - name: BG
+    uniqueID: 153984115
+    locked: 0
+  m_RenderingLayers:
+  - Default
