@@ -11,6 +11,21 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Forest Scene.unity
     guid: 32b9d5865e070cc449dc132f0dbac2e9
+  - enabled: 1
+    path: Assets/Scenes/Cave.unity
+    guid: 3bb61199e14f75040ad0192a5b338f23
+  - enabled: 1
+    path: Assets/Scenes/CaveIntersection.unity
+    guid: 3c60b4d7ceb035441b8df907033447ab
+  - enabled: 1
+    path: Assets/Scenes/CaveKey2.unity
+    guid: 344065d956061e647be1a4c87f00a7b0
+  - enabled: 1
+    path: Assets/Scenes/CaveKey3.unity
+    guid: 3ac53b3efb33afc448be07ffd21e3468
+  - enabled: 1
+    path: Assets/Scenes/BossRoom.unity
+    guid: 26a8d1b02bdd971489d19b7d1e8a03be
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

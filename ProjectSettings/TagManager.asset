@@ -15,8 +15,8 @@ TagManager:
   - UI
   - Object Nabrak
   - Player
-  - 
-  - 
+  - Boss
+  - TriggerOnlyBoss
   - 
   - 
   - 
@@ -51,6 +51,9 @@ TagManager:
     locked: 0
   - name: Env
     uniqueID: 1144752347
+    locked: 0
+  - name: BOSS
+    uniqueID: 808658397
     locked: 0
   - name: Player
     uniqueID: 48503593
