@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Object Hit
   - DeadZone
+  - UI Manager
   layers:
   - Default
   - TransparentFX
@@ -17,9 +18,9 @@ TagManager:
   - Player
   - Boss
   - TriggerOnlyBoss
-  - 
-  - 
-  - 
+  - BossAttack
+  - PlayerAttack
+  - Slime
   - 
   - 
   - 

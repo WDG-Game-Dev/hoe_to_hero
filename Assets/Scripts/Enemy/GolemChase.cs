@@ -2,21 +2,41 @@ using UnityEngine;
 
 public class GolemChase : MonoBehaviour
 {
+    public float attackDamage = 15f;
+    public float specialAttackDamage = 30f;
     public float moveSpeed = 3f;
     public float attackRange = 1.5f;
     public float attackCooldown = 2f;
+    [Range(0f, 1f)] public float specialAttackChance = 0.3f; // 30% chance special
 
     private Rigidbody2D rb;
     private Animator animator;
-
     private Transform target;
     private bool chasingPlayer = false;
+    private bool isAttacking = false;
     private float attackTimer = 0f;
+    private Collider2D attackZoneCollider;
+    private bool isHalfHealth = false;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+
+        // Cari child "AttackZone"
+        Transform attackZone = transform.Find("AttackZone");
+        if (attackZone != null)
+        {
+            attackZoneCollider = attackZone.GetComponent<Collider2D>();
+            if (attackZoneCollider != null)
+            {
+                attackZoneCollider.enabled = false;
+            }
+        }
+        else
+        {
+            Debug.LogWarning("AttackZone tidak ditemukan!");
+        }
     }
 
     void Update()
@@ -26,14 +46,14 @@ public class GolemChase : MonoBehaviour
         float distance = Vector2.Distance(transform.position, target.position);
 
         // Hadap ke player
-        if (target.position.x > transform.position.x)
-            transform.localScale = new Vector3(-1, 1, 1);
-        else
-            transform.localScale = new Vector3(1, 1, 1);
+        transform.localScale = new Vector3(
+            target.position.x > transform.position.x ? -1 : 1,
+            1,
+            1
+        );
 
         if (isAttacking)
         {
-            // Jangan lakukan apa-apa saat sedang menyerang
             rb.linearVelocity = Vector2.zero;
             return;
         }
@@ -45,7 +65,11 @@ public class GolemChase : MonoBehaviour
 
             if (attackTimer >= attackCooldown)
             {
-                Attack();
+                if (isHalfHealth && Random.value < specialAttackChance)
+                    SpecialAttack();
+                else
+                    Attack();
+
                 attackTimer = 0f;
             }
             else
@@ -61,38 +85,54 @@ public class GolemChase : MonoBehaviour
         }
     }
 
-
-    private bool isAttacking = false;
     private void Attack()
     {
-        if (isAttacking) return; // cegah spam
+        if (isAttacking) return;
         isAttacking = true;
 
         rb.linearVelocity = Vector2.zero;
         animator.Play("AttackGolem");
-        Debug.Log("Golem menyerang!");
 
-        // Reset setelah selesai (misalnya 1.2 detik)
-        Invoke(nameof(FinishAttack), 2.5f);
-
-
-        if (animator != null && !animator.isActiveAndEnabled)
+        if (attackZoneCollider != null)
         {
-            Debug.LogWarning("Animator tidak aktif saat akan memainkan animasi.");
+            Invoke(nameof(EnableAttackZone), 0.4f);
+            Invoke(nameof(DisableAttackZone), 0.6f);
         }
+
+        Invoke(nameof(FinishAttack), 1.2f);
     }
 
-    private void FinishAttack()
+    private void SpecialAttack()
     {
-        isAttacking = false;
+        if (isAttacking) return;
+        isAttacking = true;
+
+        rb.linearVelocity = Vector2.zero;
+        animator.Play("SpecialAttackGolem");
+
+        attackDamage = specialAttackDamage;
+
+        if (attackZoneCollider != null)
+        {
+            Invoke(nameof(EnableAttackZone), 0.5f);
+            Invoke(nameof(DisableAttackZone), 0.8f);
+        }
+
+        Invoke(nameof(ResetAttackDamage), 1.5f);
+        Invoke(nameof(FinishAttack), 3f);
     }
 
+    private void EnableAttackZone() => attackZoneCollider.enabled = true;
+    private void DisableAttackZone() => attackZoneCollider.enabled = false;
+    private void ResetAttackDamage() => attackDamage = 15f;
+    private void FinishAttack() => isAttacking = false;
 
     public void StartChase(Transform player)
     {
         chasingPlayer = true;
         target = player;
-        attackTimer = attackCooldown; // bisa serang langsung
+        attackTimer = attackCooldown;
+
         var patrol = GetComponent<GolemPatrol>();
         if (patrol != null)
         {
@@ -106,17 +146,15 @@ public class GolemChase : MonoBehaviour
         chasingPlayer = false;
         rb.linearVelocity = Vector2.zero;
 
-        if (animator != null)
+        if (animator != null && animator.isActiveAndEnabled)
         {
-            if (animator.isActiveAndEnabled)
-            {
-                animator.Play("IdleGolem");
-            }
-            else
-            {
-                Debug.LogWarning("Animator tidak aktif, skip pemanggilan animasi.");
-            }
+            animator.Play("IdleGolem");
         }
     }
 
+    public void EnableSpecialAttackMode()
+    {
+        isHalfHealth = true;
+        Debug.Log("Boss masuk Phase 2!");
+    }
 }

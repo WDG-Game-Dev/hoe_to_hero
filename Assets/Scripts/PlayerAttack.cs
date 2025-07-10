@@ -1,45 +1,18 @@
-//using UnityEngine;
-
-//public class PlayerAttack : MonoBehaviour
-//{
-//    [SerializeField] private float attackCooldown;
-//    private Animator anim;
-//    private PlayerMovement playerMovement;
-//    private float cooldownTimer = Mathf.Infinity;
-
-
-
-//    private void Awake()
-//    {
-//        anim = GetComponent<Animator>();
-//        playerMovement = GetComponent<PlayerMovement>();
-//    }
-
-//    private void Update()
-//    {
-//        if (Input.GetMouseButton(0) && cooldownTimer > attackCooldown && playerMovement.canAttack())
-//            Attack();
-
-//        cooldownTimer +=  Time.deltaTime;
-//    }
-
-//    private void Attack()
-//    {
-//        anim.SetTrigger("attack");
-//        cooldownTimer = 0;
-//    }
-
-
-//}
-
-
 using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-    [SerializeField] private float attackCooldown;
-    [SerializeField] private float attack2Cooldown;
-    [SerializeField] private float attack3Cooldown;
+    [Header("Cooldown")]
+    [SerializeField] private float attackCooldown = 0.5f;
+    [SerializeField] private float attack2Cooldown = 1f;
+    [SerializeField] private float attack3Cooldown = 2f;
+
+    [Header("Damage Settings")]
+    [SerializeField] private float attackDamage = 10f;
+
+    [Header("Attack Hitbox")]
+    [SerializeField] private Collider2D attackHitbox;
+
     private Animator anim;
     private PlayerMovement playerMovement;
     private float cooldownTimer = Mathf.Infinity;
@@ -50,23 +23,21 @@ public class PlayerAttack : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         playerMovement = GetComponent<PlayerMovement>();
+        if (attackHitbox != null)
+            attackHitbox.enabled = false; // Pastikan mati dulu
     }
 
     private void Update()
     {
-        // Handle attack 1 with left mouse button (mouse button 0)
         if (Input.GetMouseButton(0) && cooldownTimer > attackCooldown && playerMovement.canAttack())
             Attack();
 
-        // Handle attack 2 with right mouse button (mouse button 1)
         if (Input.GetMouseButton(1) && cooldownTimer2 > attack2Cooldown && playerMovement.canAttack())
             Attack2();
 
-        // Handle attack 3 with left control key (CTRL)
         if (Input.GetKey(KeyCode.LeftControl) && cooldownTimer3 > attack3Cooldown && playerMovement.canAttack())
             Attack3();
 
-        // Update cooldown timers
         cooldownTimer += Time.deltaTime;
         cooldownTimer2 += Time.deltaTime;
         cooldownTimer3 += Time.deltaTime;
@@ -74,19 +45,58 @@ public class PlayerAttack : MonoBehaviour
 
     private void Attack()
     {
-        anim.SetTrigger("attack");  // Serangan pertama
+        anim.SetTrigger("attack");
         cooldownTimer = 0;
     }
 
     private void Attack2()
     {
-        anim.SetTrigger("attack2");  // Serangan kedua
+        anim.SetTrigger("attack2");
         cooldownTimer2 = 0;
     }
 
     private void Attack3()
     {
-        anim.SetTrigger("attack3");  // Serangan ketiga (CTRL)
+        anim.SetTrigger("attack3");
         cooldownTimer3 = 0;
+    }
+
+    // Animation Events — panggil dari animasi
+    public void EnableHitbox()
+    {
+        if (attackHitbox != null)
+            attackHitbox.enabled = true;
+    }
+
+    public void DisableHitbox()
+    {
+        if (attackHitbox != null)
+            attackHitbox.enabled = false;
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!attackHitbox.enabled) return;
+
+        if (other.CompareTag("Boss"))
+        {
+            BossHealth boss = other.GetComponent<BossHealth>();
+            if (boss != null)
+            {
+                boss.TakeDamage(attackDamage);
+                Debug.Log("Boss terkena pukulan player: -" + attackDamage);
+                attackHitbox.enabled = false; // agar 1x hit saja
+            }
+        }
+        if (other.CompareTag("Slime"))
+        {
+            SlimeHealth slime = other.GetComponent<SlimeHealth>();
+            if (slime != null)
+            {
+                slime.TakeDamage(attackDamage);
+                Debug.Log("Slime terkena pukulan player: -" + attackDamage);
+                attackHitbox.enabled = false;
+            }
+        }
     }
 }
